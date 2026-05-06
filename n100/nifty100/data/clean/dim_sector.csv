@@ -1,0 +1,16 @@
+sector_id,sector_name,sector_code,description
+1,Auto,AUTO,Auto sector
+2,Banking,BANKING,Banking sector
+3,Cement,CEMENT,Cement sector
+4,Consumer Goods,CONSUMER_GOODS,Consumer Goods sector
+5,Energy,ENERGY,Energy sector
+6,Healthcare,HEALTHCARE,Healthcare sector
+7,IT,IT,IT sector
+8,Infrastructure,INFRASTRUCTURE,Infrastructure sector
+9,Insurance,INSURANCE,Insurance sector
+10,NBFC,NBFC,NBFC sector
+11,Other,OTHER,Other sector
+12,Paint,PAINT,Paint sector
+13,Ports,PORTS,Ports sector
+14,Power,POWER,Power sector
+15,Telecom,TELECOM,Telecom sector
