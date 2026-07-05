@@ -1,4 +1,4 @@
-# BlueStock Nifty100
+# Fintech Nifty100
 
 Financial analytics project for NIFTY 100 company data with ETL pipelines, a Django REST API, and a Power BI dashboard.
 
