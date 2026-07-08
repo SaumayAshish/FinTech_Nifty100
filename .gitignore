@@ -9,3 +9,9 @@ venv/
 env/
 dist/
 build/
+.env
+
+# Duplicate raw source data kept only under n100/nifty100/data/raw/
+/*.xlsx
+/n100/*.xlsx
+/files.zip
