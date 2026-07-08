@@ -73,6 +73,7 @@ class HealthLabel(models.Model):
 
 
 class ProfitLoss(models.Model):
+    pk = models.CompositePrimaryKey("symbol_id", "year_id")
     symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="profit_loss")
     year = models.ForeignKey(YearDimension, on_delete=models.DO_NOTHING, db_column="year_id", related_name="profit_loss")
     sales = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
@@ -96,11 +97,11 @@ class ProfitLoss(models.Model):
     class Meta:
         db_table = "fact_profit_loss"
         managed = False
-        unique_together = [("symbol", "year")]
         ordering = ["symbol", "year"]
 
 
 class BalanceSheet(models.Model):
+    pk = models.CompositePrimaryKey("symbol_id", "year_id")
     symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="balance_sheet")
     year = models.ForeignKey(YearDimension, on_delete=models.DO_NOTHING, db_column="year_id", related_name="balance_sheet")
     equity_capital = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
@@ -120,11 +121,11 @@ class BalanceSheet(models.Model):
     class Meta:
         db_table = "fact_balance_sheet"
         managed = False
-        unique_together = [("symbol", "year")]
         ordering = ["symbol", "year"]
 
 
 class CashFlow(models.Model):
+    pk = models.CompositePrimaryKey("symbol_id", "year_id")
     symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="cash_flow")
     year = models.ForeignKey(YearDimension, on_delete=models.DO_NOTHING, db_column="year_id", related_name="cash_flow")
     operating_activity = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
@@ -137,11 +138,11 @@ class CashFlow(models.Model):
     class Meta:
         db_table = "fact_cash_flow"
         managed = False
-        unique_together = [("symbol", "year")]
         ordering = ["symbol", "year"]
 
 
 class Analysis(models.Model):
+    pk = models.CompositePrimaryKey("symbol_id", "period_label")
     symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="analysis")
     period_label = models.CharField(max_length=10)
     compounded_sales_growth_pct = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -152,7 +153,6 @@ class Analysis(models.Model):
     class Meta:
         db_table = "fact_analysis"
         managed = False
-        unique_together = [("symbol", "period_label")]
         ordering = ["symbol", "period_label"]
 
 

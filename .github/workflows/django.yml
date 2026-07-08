@@ -14,6 +14,21 @@ jobs:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: nifty100_dw
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -26,5 +41,13 @@ jobs:
         pip install -r n100/nifty100/requirements.txt
     - name: Run Tests
       working-directory: n100/nifty100/api
+      env:
+        USE_POSTGRES: "true"
+        DB_NAME: nifty100_dw
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_HOST: localhost
+        DB_PORT: "5432"
+        DJANGO_SECRET_KEY: ci-test-secret-key
       run: |
-        python manage.py test
+        pytest
