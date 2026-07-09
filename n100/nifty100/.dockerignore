@@ -1,0 +1,11 @@
+data/
+dashboards/
+etl/
+sql/
+**/__pycache__/
+*.pyc
+.venv/
+venv/
+db.sqlite3
+api/.env
+.pytest_cache/

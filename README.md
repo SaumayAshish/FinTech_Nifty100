@@ -105,7 +105,24 @@ Reference screenshot:
 
 - `Assets/BlueStock_Analytics_Final.png`
 
+## Running with Docker
+
+`n100/nifty100/docker-compose.yml` runs the API against a real Postgres
+container, loading `sql/02_schema.sql` on first start:
+
+```powershell
+cd n100/nifty100
+docker compose up --build
+```
+
+The API is served at `http://localhost:8000/api/`. This brings up the
+warehouse schema only — it does not run the ETL pipeline or copy `data/`
+into the image, so endpoints backed by flat CSVs (`/api/metrics/csv/`,
+`/api/snapshot/<symbol>/`) will return 503 until ETL output is provided
+separately. Override any variable in `docker-compose.yml`'s `environment:`
+blocks via a `.env` file in `n100/nifty100/` (e.g. `DJANGO_SECRET_KEY`,
+`DB_PASSWORD`).
+
 ## Notes
 
 - The repository currently contains source datasets and some generated artifacts for convenience.
-- `extracted_files/` is reference material and not part of the active app path.

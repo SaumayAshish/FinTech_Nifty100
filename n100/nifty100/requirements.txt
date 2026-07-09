@@ -9,9 +9,10 @@ psycopg2-binary>=2.9.0
 SQLAlchemy>=2.0.0
 
 # Django & REST API
-Django>=4.2
+Django>=5.2  # CompositePrimaryKey (core/models.py) requires 5.2+
 djangorestframework>=3.14
 django-filter>=23.0
+gunicorn>=21.0
 
 # Configuration & Environment
 python-dotenv>=1.0
