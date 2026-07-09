@@ -49,6 +49,13 @@ Base routes are exposed under `/api/`:
 - `/api/metrics/csv/`
 - `/api/snapshot/<symbol>/`
 
+## API Access
+
+All `/api/` endpoints are public and read-only (NIFTY 100 company financials,
+no per-user data), so there is no authentication layer. Anonymous requests
+are rate-limited (`API_ANON_THROTTLE_RATE`, default `120/min`) to guard
+against scraping/abuse.
+
 ## Local Setup
 
 ### Install dependencies
@@ -57,21 +64,24 @@ Base routes are exposed under `/api/`:
 pip install -r n100/nifty100/requirements.txt
 ```
 
+### Configure environment
+
+```powershell
+cd n100/nifty100/api
+copy .env.example .env
+```
+
+See `.env.example` for all supported variables (Django secret/debug/hosts,
+Postgres connection, admin bootstrap, throttle rate). By default the API
+uses SQLite. To use PostgreSQL instead, set `USE_POSTGRES=true` plus
+`DB_NAME`/`DB_USER`/`DB_PASSWORD`/`DB_HOST`/`DB_PORT`.
+
 ### Run the Django API
 
 ```powershell
 cd n100/nifty100/api
 python manage.py runserver
 ```
-
-By default the API uses SQLite. To use PostgreSQL instead, set:
-
-- `USE_POSTGRES=true`
-- `DB_NAME`
-- `DB_USER`
-- `DB_PASSWORD`
-- `DB_HOST`
-- `DB_PORT`
 
 ## Power BI Dashboard
 
