@@ -47,7 +47,9 @@ class ProfitLossSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProfitLoss
-        fields = "__all__"
+        # exclude the synthetic composite `pk` field (see models.py); it's
+        # an internal identity mechanism, not part of the API contract.
+        exclude = ["pk"]
 
 
 class BalanceSheetSerializer(serializers.ModelSerializer):
@@ -56,7 +58,7 @@ class BalanceSheetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BalanceSheet
-        fields = "__all__"
+        exclude = ["pk"]
 
 
 class CashFlowSerializer(serializers.ModelSerializer):
@@ -65,7 +67,7 @@ class CashFlowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CashFlow
-        fields = "__all__"
+        exclude = ["pk"]
 
 
 class AnalysisSerializer(serializers.ModelSerializer):
@@ -73,7 +75,7 @@ class AnalysisSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Analysis
-        fields = "__all__"
+        exclude = ["pk"]
 
 
 class MLScoreSerializer(serializers.ModelSerializer):

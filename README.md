@@ -49,6 +49,9 @@ Base routes are exposed under `/api/`:
 - `/api/metrics/csv/`
 - `/api/snapshot/<symbol>/`
 
+Auto-generated OpenAPI docs are served at `/api/schema/` (raw schema) and
+`/api/docs/` (Swagger UI).
+
 ## API Access
 
 All `/api/` endpoints are public and read-only (NIFTY 100 company financials,
