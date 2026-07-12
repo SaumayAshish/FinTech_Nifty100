@@ -7,8 +7,8 @@ from .views import (
     CompanyDetailView,
     CompanyListView,
     CompanySnapshotView,
+    LegacyMetricsView,
     MLScoreListView,
-    MetricsFromCSVView,
     ProfitLossListView,
 )
 
@@ -20,6 +20,6 @@ urlpatterns = [
     path("financials/cash-flow/", CashFlowListView.as_view(), name="cash-flow"),
     path("analysis/", AnalysisListView.as_view(), name="analysis"),
     path("ml-scores/", MLScoreListView.as_view(), name="ml-scores"),
-    path("metrics/csv/", MetricsFromCSVView.as_view(), name="metrics-csv"),
+    path("metrics/csv/", LegacyMetricsView.as_view(), name="metrics-csv"),
     path("snapshot/<str:symbol>/", CompanySnapshotView.as_view(), name="snapshot"),
 ]

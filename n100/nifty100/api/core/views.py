@@ -1,10 +1,7 @@
-from pathlib import Path
-
-import pandas as pd
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, generics, status
+from rest_framework import filters, generics
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from .models import Analysis, BalanceSheet, CashFlow, Company, MLScore, ProfitLoss
 from .serializers import (
@@ -15,9 +12,8 @@ from .serializers import (
     CompanyListSerializer,
     MLScoreSerializer,
     ProfitLossSerializer,
+    SnapshotSerializer,
 )
-
-DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "clean"
 
 
 class CompanyListView(generics.ListAPIView):
@@ -89,69 +85,44 @@ class MLScoreListView(generics.ListAPIView):
         return MLScore.objects.select_related("symbol", "health_label")
 
 
-class MetricsFromCSVView(APIView):
-    def get(self, request):
-        path = DATA_DIR / "fact_profit_loss.csv"
-        if not path.exists():
-            return Response({"error": "fact_profit_loss.csv not found. Run ETL first."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+class LegacyMetricsView(ProfitLossListView):
+    """
+    Kept at the legacy /api/metrics/csv/ URL for backward compatibility.
 
-        df = pd.read_csv(path)
-        symbol = request.query_params.get("symbol")
-        year_label = request.query_params.get("year_label")
-        sort_by = request.query_params.get("sort", "year_id")
-        desc = request.query_params.get("desc", "true").lower() == "true"
-        limit = int(request.query_params.get("limit", 100))
-
-        if symbol:
-            df = df[df["symbol"].str.upper() == symbol.upper()]
-        if year_label and "year_label" in df.columns:
-            df = df[df["year_label"].astype(str) == year_label]
-        if sort_by in df.columns:
-            df = df.sort_values(sort_by, ascending=not desc, na_position="last")
-
-        df = df.head(limit)
-        return Response({"count": len(df), "results": df.where(pd.notna(df), None).to_dict(orient="records")})
+    Originally read data/clean/fact_profit_loss.csv directly at request
+    time, a separate data path from every other endpoint here. Now backed
+    by the same Postgres-backed queryset as /api/financials/profit-loss/
+    so the two can no longer drift apart.
+    """
 
 
-class CompanySnapshotView(APIView):
+def _latest_by_year(queryset):
+    return queryset.order_by("-year__sort_order").first()
+
+
+class CompanySnapshotView(generics.GenericAPIView):
+    serializer_class = SnapshotSerializer
+
     def get(self, request, symbol):
-        symbol = symbol.upper()
-        companies_path = DATA_DIR / "dim_company.csv"
-        if not companies_path.exists():
-            return Response({"error": "Clean warehouse CSVs not found. Run ETL first."}, status=503)
-
-        company_df = pd.read_csv(companies_path)
-        pl_path = DATA_DIR / "fact_profit_loss.csv"
-        bs_path = DATA_DIR / "fact_balance_sheet.csv"
-        cf_path = DATA_DIR / "fact_cash_flow.csv"
-        analysis_path = DATA_DIR / "fact_analysis.csv"
-
-        company_rows = company_df[company_df["symbol"].str.upper() == symbol]
-        if company_rows.empty:
-            return Response({"error": f"Company '{symbol}' not found."}, status=404)
-
-        payload = {"company": company_rows.iloc[0].where(pd.notna(company_rows.iloc[0]), None).to_dict()}
-
-        def latest_record(path):
-            if not path.exists():
-                return None
-            df = pd.read_csv(path)
-            df = df[df["symbol"].str.upper() == symbol]
-            if df.empty:
-                return None
-            sort_col = "sort_order" if "sort_order" in df.columns else "year_id"
-            row = df.sort_values(sort_col).iloc[-1]
-            return row.where(pd.notna(row), None).to_dict()
-
-        payload["latest_profit_loss"] = latest_record(pl_path)
-        payload["latest_balance_sheet"] = latest_record(bs_path)
-        payload["latest_cash_flow"] = latest_record(cf_path)
-
-        if analysis_path.exists():
-            df = pd.read_csv(analysis_path)
-            df = df[df["symbol"].str.upper() == symbol]
-            payload["analysis"] = df.where(pd.notna(df), None).to_dict(orient="records")
-        else:
-            payload["analysis"] = []
-
-        return Response(payload)
+        company = get_object_or_404(
+            Company.objects.prefetch_related("documents", "pros_cons"),
+            symbol=symbol.upper(),
+        )
+        data = {
+            "company": company,
+            "latest_profit_loss": _latest_by_year(
+                ProfitLoss.objects.select_related("symbol", "year").filter(symbol=company)
+            ),
+            "latest_balance_sheet": _latest_by_year(
+                BalanceSheet.objects.select_related("symbol", "year").filter(symbol=company)
+            ),
+            "latest_cash_flow": _latest_by_year(
+                CashFlow.objects.select_related("symbol", "year").filter(symbol=company)
+            ),
+            "analysis": Analysis.objects.select_related("symbol").filter(symbol=company),
+            "latest_ml_score": MLScore.objects.select_related("symbol", "health_label")
+            .filter(symbol=company)
+            .order_by("-computed_at")
+            .first(),
+        }
+        return Response(self.get_serializer(data).data)

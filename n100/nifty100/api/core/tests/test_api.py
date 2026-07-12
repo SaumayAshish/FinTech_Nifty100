@@ -55,26 +55,28 @@ def test_ml_score_list_includes_health_label(api_client, ml_score, company):
     assert row["health_label_name"] == "EXCELLENT"
 
 
-def test_metrics_csv_view_returns_503_when_no_csv(api_client, db, settings, tmp_path):
-    from core import views
-
-    original = views.DATA_DIR
-    views.DATA_DIR = tmp_path
-    try:
-        response = api_client.get(reverse("metrics-csv"))
-    finally:
-        views.DATA_DIR = original
-    assert response.status_code == 503
+def test_legacy_metrics_endpoint_matches_profit_loss(api_client, profit_loss, company):
+    # /api/metrics/csv/ is a legacy URL alias for /api/financials/profit-loss/;
+    # both must return identical DB-backed data (see LegacyMetricsView).
+    legacy = api_client.get(reverse("metrics-csv"), {"symbol": company.symbol})
+    current = api_client.get(reverse("profit-loss"), {"symbol": company.symbol})
+    assert legacy.status_code == 200
+    assert legacy.data["results"] == current.data["results"]
 
 
-def test_snapshot_view_returns_404_for_unknown_company(api_client, db, tmp_path):
-    from core import views
-
-    (tmp_path / "dim_company.csv").write_text("symbol,company_name\nTCS,Tata Consultancy Services\n")
-    original = views.DATA_DIR
-    views.DATA_DIR = tmp_path
-    try:
-        response = api_client.get(reverse("snapshot", args=["NOPE"]))
-    finally:
-        views.DATA_DIR = original
+def test_snapshot_view_returns_404_for_unknown_company(api_client, db):
+    response = api_client.get(reverse("snapshot", args=["NOPE"]))
     assert response.status_code == 404
+
+
+def test_snapshot_view_returns_combined_data(
+    api_client, company, profit_loss, balance_sheet, ml_score
+):
+    response = api_client.get(reverse("snapshot", args=[company.symbol]))
+    assert response.status_code == 200
+    assert response.data["company"]["symbol"] == "TCS"
+    assert response.data["latest_profit_loss"]["net_profit"] == "20000.00"
+    assert response.data["latest_balance_sheet"]["total_assets"] == "500000.00"
+    assert response.data["latest_cash_flow"] is None
+    assert response.data["analysis"] == []
+    assert response.data["latest_ml_score"]["health_label_name"] == "EXCELLENT"

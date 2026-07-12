@@ -46,11 +46,16 @@ Base routes are exposed under `/api/`:
 - `/api/financials/cash-flow/`
 - `/api/analysis/`
 - `/api/ml-scores/`
-- `/api/metrics/csv/`
+- `/api/metrics/csv/` (legacy alias for `/api/financials/profit-loss/`, kept
+  for backward compatibility)
 - `/api/snapshot/<symbol>/`
 
 Auto-generated OpenAPI docs are served at `/api/schema/` (raw schema) and
 `/api/docs/` (Swagger UI).
+
+Every endpoint reads from the Postgres/SQLite warehouse via the ORM — none
+of them read the flat CSVs in `data/clean/` at request time, so there is a
+single source of truth and no risk of the API drifting from the database.
 
 ## API Access
 
@@ -119,12 +124,12 @@ docker compose up --build
 ```
 
 The API is served at `http://localhost:8000/api/`. This brings up the
-warehouse schema only — it does not run the ETL pipeline or copy `data/`
-into the image, so endpoints backed by flat CSVs (`/api/metrics/csv/`,
-`/api/snapshot/<symbol>/`) will return 503 until ETL output is provided
-separately. Override any variable in `docker-compose.yml`'s `environment:`
-blocks via a `.env` file in `n100/nifty100/` (e.g. `DJANGO_SECRET_KEY`,
-`DB_PASSWORD`).
+warehouse schema only, with no rows in it — run the ETL pipeline
+(`03_load_to_warehouse.py`) against the same database to populate data.
+Every endpoint reads from that database, so nothing extra needs to be
+copied into the image. Override any variable in `docker-compose.yml`'s
+`environment:` blocks via a `.env` file in `n100/nifty100/` (e.g.
+`DJANGO_SECRET_KEY`, `DB_PASSWORD`).
 
 ## Notes
 
