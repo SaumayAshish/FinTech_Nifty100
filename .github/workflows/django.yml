@@ -7,6 +7,38 @@ on:
     branches: [ "main" ]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r n100/nifty100/requirements.txt
+    - name: flake8
+      run: flake8 n100/nifty100
+    - name: black --check
+      run: black --check n100/nifty100
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r n100/nifty100/requirements.txt
+    - name: pip-audit
+      run: pip-audit -r n100/nifty100/requirements.txt
+
   build:
     runs-on: ubuntu-latest
     strategy:

@@ -56,7 +56,12 @@ class CashFlowListView(generics.ListAPIView):
     serializer_class = CashFlowSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ["symbol", "year"]
-    ordering_fields = ["year__sort_order", "operating_activity", "free_cash_flow", "cash_conversion_ratio"]
+    ordering_fields = [
+        "year__sort_order",
+        "operating_activity",
+        "free_cash_flow",
+        "cash_conversion_ratio",
+    ]
     ordering = ["symbol", "year__sort_order"]
 
     def get_queryset(self):
@@ -67,7 +72,11 @@ class AnalysisListView(generics.ListAPIView):
     serializer_class = AnalysisSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ["symbol", "period_label"]
-    ordering_fields = ["period_label", "compounded_sales_growth_pct", "compounded_profit_growth_pct"]
+    ordering_fields = [
+        "period_label",
+        "compounded_sales_growth_pct",
+        "compounded_profit_growth_pct",
+    ]
     ordering = ["symbol", "period_label"]
 
     def get_queryset(self):

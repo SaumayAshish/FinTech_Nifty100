@@ -13,7 +13,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 FILE_MAP = {
     "companies.xlsx": "companies.csv",
     "analysis.xlsx": "analysis.csv",

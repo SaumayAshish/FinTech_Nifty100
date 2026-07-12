@@ -12,7 +12,9 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-secret-key")
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
-ALLOWED_HOSTS = [host for host in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if host]
+ALLOWED_HOSTS = [
+    host for host in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if host
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",

@@ -21,7 +21,11 @@ def bounded_score(series: pd.Series, higher_is_better: bool = True) -> pd.Series
     lo = numeric.quantile(0.05)
     hi = numeric.quantile(0.95)
     clipped = numeric.clip(lower=lo, upper=hi)
-    scaled = (clipped - lo) / (hi - lo) * 100 if hi != lo else pd.Series([50.0] * len(series), index=series.index)
+    scaled = (
+        (clipped - lo) / (hi - lo) * 100
+        if hi != lo
+        else pd.Series([50.0] * len(series), index=series.index)
+    )
     return scaled if higher_is_better else 100 - scaled
 
 

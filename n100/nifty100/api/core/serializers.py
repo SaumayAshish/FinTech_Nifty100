@@ -1,6 +1,15 @@
 from rest_framework import serializers
 
-from .models import Analysis, BalanceSheet, CashFlow, Company, Document, MLScore, ProfitLoss, ProsCons
+from .models import (
+    Analysis,
+    BalanceSheet,
+    CashFlow,
+    Company,
+    Document,
+    MLScore,
+    ProfitLoss,
+    ProsCons,
+)
 
 
 class DocumentSerializer(serializers.ModelSerializer):

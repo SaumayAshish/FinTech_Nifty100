@@ -74,8 +74,12 @@ class HealthLabel(models.Model):
 
 class ProfitLoss(models.Model):
     pk = models.CompositePrimaryKey("symbol_id", "year_id")
-    symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="profit_loss")
-    year = models.ForeignKey(YearDimension, on_delete=models.DO_NOTHING, db_column="year_id", related_name="profit_loss")
+    symbol = models.ForeignKey(
+        Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="profit_loss"
+    )
+    year = models.ForeignKey(
+        YearDimension, on_delete=models.DO_NOTHING, db_column="year_id", related_name="profit_loss"
+    )
     sales = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
     expenses = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
     operating_profit = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
@@ -88,7 +92,9 @@ class ProfitLoss(models.Model):
     net_profit = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
     eps = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
     dividend_payout_pct = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
-    net_profit_margin_pct = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
+    net_profit_margin_pct = models.DecimalField(
+        max_digits=10, decimal_places=4, blank=True, null=True
+    )
     expense_ratio_pct = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
     interest_coverage = models.DecimalField(max_digits=12, decimal_places=4, blank=True, null=True)
     asset_turnover = models.DecimalField(max_digits=12, decimal_places=4, blank=True, null=True)
@@ -102,8 +108,15 @@ class ProfitLoss(models.Model):
 
 class BalanceSheet(models.Model):
     pk = models.CompositePrimaryKey("symbol_id", "year_id")
-    symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="balance_sheet")
-    year = models.ForeignKey(YearDimension, on_delete=models.DO_NOTHING, db_column="year_id", related_name="balance_sheet")
+    symbol = models.ForeignKey(
+        Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="balance_sheet"
+    )
+    year = models.ForeignKey(
+        YearDimension,
+        on_delete=models.DO_NOTHING,
+        db_column="year_id",
+        related_name="balance_sheet",
+    )
     equity_capital = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
     reserves = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
     borrowings = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
@@ -116,7 +129,9 @@ class BalanceSheet(models.Model):
     total_assets = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
     debt_to_equity = models.DecimalField(max_digits=12, decimal_places=4, blank=True, null=True)
     equity_ratio = models.DecimalField(max_digits=12, decimal_places=4, blank=True, null=True)
-    book_value_per_share = models.DecimalField(max_digits=12, decimal_places=4, blank=True, null=True)
+    book_value_per_share = models.DecimalField(
+        max_digits=12, decimal_places=4, blank=True, null=True
+    )
 
     class Meta:
         db_table = "fact_balance_sheet"
@@ -126,14 +141,20 @@ class BalanceSheet(models.Model):
 
 class CashFlow(models.Model):
     pk = models.CompositePrimaryKey("symbol_id", "year_id")
-    symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="cash_flow")
-    year = models.ForeignKey(YearDimension, on_delete=models.DO_NOTHING, db_column="year_id", related_name="cash_flow")
+    symbol = models.ForeignKey(
+        Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="cash_flow"
+    )
+    year = models.ForeignKey(
+        YearDimension, on_delete=models.DO_NOTHING, db_column="year_id", related_name="cash_flow"
+    )
     operating_activity = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
     investing_activity = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
     financing_activity = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
     net_cash_flow = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
     free_cash_flow = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
-    cash_conversion_ratio = models.DecimalField(max_digits=12, decimal_places=4, blank=True, null=True)
+    cash_conversion_ratio = models.DecimalField(
+        max_digits=12, decimal_places=4, blank=True, null=True
+    )
 
     class Meta:
         db_table = "fact_cash_flow"
@@ -143,11 +164,19 @@ class CashFlow(models.Model):
 
 class Analysis(models.Model):
     pk = models.CompositePrimaryKey("symbol_id", "period_label")
-    symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="analysis")
+    symbol = models.ForeignKey(
+        Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="analysis"
+    )
     period_label = models.CharField(max_length=10)
-    compounded_sales_growth_pct = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    compounded_profit_growth_pct = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    stock_price_cagr_pct = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    compounded_sales_growth_pct = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True
+    )
+    compounded_profit_growth_pct = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True
+    )
+    stock_price_cagr_pct = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True
+    )
     roe_pct = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     class Meta:
@@ -157,7 +186,9 @@ class Analysis(models.Model):
 
 
 class MLScore(models.Model):
-    symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="ml_scores")
+    symbol = models.ForeignKey(
+        Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="ml_scores"
+    )
     computed_at = models.DateTimeField()
     overall_score = models.DecimalField(max_digits=6, decimal_places=2)
     profitability_score = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
@@ -182,7 +213,9 @@ class MLScore(models.Model):
 
 
 class ProsCons(models.Model):
-    symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="pros_cons")
+    symbol = models.ForeignKey(
+        Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="pros_cons"
+    )
     is_pro = models.BooleanField()
     category = models.CharField(max_length=100, blank=True, null=True)
     text = models.TextField()
@@ -197,7 +230,9 @@ class ProsCons(models.Model):
 
 
 class Document(models.Model):
-    symbol = models.ForeignKey(Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="documents")
+    symbol = models.ForeignKey(
+        Company, on_delete=models.DO_NOTHING, db_column="symbol", related_name="documents"
+    )
     year_label = models.CharField(max_length=20, blank=True, null=True)
     document_url = models.TextField()
 
